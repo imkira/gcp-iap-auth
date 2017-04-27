@@ -42,7 +42,7 @@ For advanced usage, make sure to check the
 
 ## How to use it as a server
 
-[Binary Releases](https://github.com/imkira/releases) are provided for convenience.
+[Binary Releases](https://github.com/imkira/gcp-iap-auth/releases) are provided for convenience.
 
 After downloading it, you can execute it like:
 
