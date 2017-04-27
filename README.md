@@ -118,6 +118,49 @@ docker run --rm -e GCP_IAP_AUTH_AUDIENCES=https://yourdomain imkira/gcp-iap-auth
 
 For advanced usage, please read the instructions inside.
 
+## Using it with Kubernetes
+
+You can use it with [kubernetes](https://github.com/kubernetes/kubernetes) in
+different ways, but I personally recommend running it as a
+[sidecar container](http://blog.kubernetes.io/2015/06/the-distributed-system-toolkit-patterns.html) by adding it to, say, an existing NGINX container:
+
+```yaml
+      - name: nginx
+      # your nginx container should go here...
+      - name: gcp-iap-auth
+        image: imkira/gcp-iap-auth:0.0.1
+        env:
+        - name: GCP_IAP_AUTH_AUDIENCES
+          value: "https://logs.raytube.io"
+        - name: GCP_IAP_AUTH_LISTEN_PORT
+          value: "1080"
+        ports:
+        - name: auth
+          containerPort: 1080
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            scheme: HTTP
+            port: auth
+          periodSeconds: 1
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 10
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            scheme: HTTP
+            port: auth
+          timeoutSeconds: 5
+          initialDelaySeconds: 10
+```
+
+To use HTTPS just make sure:
+- You set up `GCP_IAP_AUTH_TLS_CERT=/path/to/tls_cert_file` and `GCP_IAP_AUTH_TLS_KEY=/path/to/tls_key_file` environment variables.
+- You set up volumes for [secrets](https://kubernetes.io/docs/concepts/configuration/secret/) in kubernetes so it knows where to find them.
+- Change the scheme in readiness and liveness probes to `HTTPS`.
+- Adjust your nginx.conf as necessary to proxy pass the auth requests to gcp-iap-auth as HTTPS.
+
 ## License
 
 gcp-iap-auth is licensed under the MIT license:
