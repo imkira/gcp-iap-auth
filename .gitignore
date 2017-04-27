@@ -1,0 +1,9 @@
+# MacOSX
+.DS_Store
+
+# vim
+*.swp
+
+# build and dist files
+/build
+/dist
