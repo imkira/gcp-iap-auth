@@ -22,7 +22,7 @@ build:
 
 dist:
 	GOOS=$(GOOS) GOARCH=$(GOARCH) $(GOBUILD_ENV) go build $(GOBUILD_FLAGS) -o "dist/$(DIST_OUTPUT)"
-	$(SHASUM) "dist/$(DIST_OUTPUT)" > "dist/$(DIST_OUTPUT).sha1"
+	cd dist && $(SHASUM) "$(DIST_OUTPUT)" > "$(DIST_OUTPUT).sha1"
 
 clean:
 	rm -rf build dist
