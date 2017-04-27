@@ -78,18 +78,6 @@ The important part is as follows ([full nginx.conf example file here](https://gi
       server AUTH_SERVER_ADDR:AUTH_SERVER_PORT;
     }
 
-    server {
-      server_name _;
-
-      location = /auth {
-          internal;
-          proxy_pass                 http://AUTH_SERVER_UPSTREAM;
-          proxy_pass_request_body    off;
-          proxy_pass_request_headers off;
-          proxy_set_header           X-Goog-Authenticated-User-JWT $http_x_goog_authenticated_user_jwt;
-      }
-    }
-
     upstream APP_SERVER_UPSTREAM {
       server APP_SERVER_ADDR:APP_SERVER_PORT;
     }
@@ -97,9 +85,17 @@ The important part is as follows ([full nginx.conf example file here](https://gi
     server {
       server_name APP_DOMAIN;
 
-      auth_request /auth;
+      location = /gcp-iap-auth {
+          internal;
+          proxy_pass                 http://AUTH_SERVER_UPSTREAM/auth;
+          proxy_pass_request_body    off;
+          proxy_pass_request_headers off;
+          proxy_set_header           X-Goog-Authenticated-User-JWT $http_x_goog_authenticated_user_jwt;
+      }
+
       location / {
-        proxy_pass http://APP_SERVER_UPSTREAM;
+        auth_request /gcp-iap-auth;
+        proxy_pass   http://APP_SERVER_UPSTREAM;
       }
     }
 ```
