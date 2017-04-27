@@ -108,6 +108,16 @@ Please note:
 - `gcp-iap-auth` only needs to receive the original `X-Goog-Authenticated-User-JWT` header sent by Google, so you can and you are advised to disable proxying the original request body and other headers. Not only it is unecessary you may leak information you may not want to.
 - Please adjust appropriately (you may want to use HTTPS instead of HTTP, multiple domains, etc.). This example is just provided for reference.
 
+## Using it with Docker
+
+[Docker images](https://hub.docker.com/r/imkira/gcp-iap-auth/) are provided for convenience.
+
+```shell
+docker run --rm -e GCP_IAP_AUTH_AUDIENCES=https://yourdomain imkira/gcp-iap-auth
+```
+
+For advanced usage, please read the instructions inside.
+
 ## License
 
 gcp-iap-auth is licensed under the MIT license:
