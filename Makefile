@@ -28,7 +28,7 @@ clean:
 	rm -rf build dist
 
 deps:
-	if [ ! -d "${GOPATH}/src/github.com/Masterminds/glide" ]; then go get -u github.com/Masterminds/glide; fi
+	[ ! -d "${GOPATH}/src/github.com/Masterminds/glide" ] && go get -u github.com/Masterminds/glide
 
 vendor:
 	glide up -v
