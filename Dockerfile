@@ -3,8 +3,8 @@ LABEL maintainer "Mario Freitas <imkira@gmail.com>"
 
 WORKDIR /usr/local/bin
 
-ENV RELEASE_VER  v0.0.2
-ENV RELEASE_SHA1 c3ff10e9176137f885ec4aa4bef70b217a0cce4e
+ENV RELEASE_VER  v0.0.3
+ENV RELEASE_SHA1 69873d40040b5f65698d9cf59d713d0f141ca1ea
 
 RUN apk add --no-cache --update \
       ca-certificates \
