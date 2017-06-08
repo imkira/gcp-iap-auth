@@ -151,7 +151,7 @@ different ways, but I personally recommend running it as a
         image: imkira/gcp-iap-auth:0.0.1
         env:
         - name: GCP_IAP_AUTH_AUDIENCES
-          value: "https://logs.raytube.io"
+          value: "https://YOUR_DOMAIN1,https://YOUR_DOMAIN2"
         - name: GCP_IAP_AUTH_LISTEN_PORT
           value: "1080"
         ports:
