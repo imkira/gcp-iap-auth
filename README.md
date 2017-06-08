@@ -140,6 +140,46 @@ For advanced usage, please read the instructions inside.
 
 ## Using it with Kubernetes
 
+### As a reverse proxy
+
+A simple way to use it with
+[kubernetes](https://github.com/kubernetes/kubernetes) and without any other
+dependencies is to run it as a reverse proxy that validates and forwards
+requests to a backend server.
+
+```yaml
+      - name: gcp-iap-auth
+        image: imkira/gcp-iap-auth:0.0.2
+        env:
+        - name: GCP_IAP_AUTH_AUDIENCES
+          value: "https://YOUR_DOMAIN1,https://YOUR_DOMAIN2"
+        - name: GCP_IAP_AUTH_LISTEN_PORT
+          value: "1080"
+        - name: GCP_IAP_BACKEND
+          value: "http://YOUR_BACKEND_SERVER"
+        ports:
+        - name: proxy
+          containerPort: 1080
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            scheme: HTTP
+            port: proxy
+          periodSeconds: 1
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 10
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            scheme: HTTP
+            port: proxy
+          timeoutSeconds: 5
+          initialDelaySeconds: 10
+```
+
+### With NGINX
+
 You can use it with [kubernetes](https://github.com/kubernetes/kubernetes) in
 different ways, but I personally recommend running it as a
 [sidecar container](http://blog.kubernetes.io/2015/06/the-distributed-system-toolkit-patterns.html) by adding it to, say, an existing NGINX container:
@@ -174,6 +214,8 @@ different ways, but I personally recommend running it as a
           timeoutSeconds: 5
           initialDelaySeconds: 10
 ```
+
+### Notes
 
 To use HTTPS just make sure:
 - You set up `GCP_IAP_AUTH_TLS_CERT=/path/to/tls_cert_file` and `GCP_IAP_AUTH_TLS_KEY=/path/to/tls_key_file` environment variables.
