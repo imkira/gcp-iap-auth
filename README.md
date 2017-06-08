@@ -148,7 +148,7 @@ different ways, but I personally recommend running it as a
       - name: nginx
       # your nginx container should go here...
       - name: gcp-iap-auth
-        image: imkira/gcp-iap-auth:0.0.1
+        image: imkira/gcp-iap-auth:0.0.2
         env:
         - name: GCP_IAP_AUTH_AUDIENCES
           value: "https://YOUR_DOMAIN1,https://YOUR_DOMAIN2"
