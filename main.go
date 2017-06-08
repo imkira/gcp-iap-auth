@@ -22,6 +22,8 @@ func main() {
 		log.Fatal(err)
 	}
 
+	log.Printf("Matching audiences: %s\n", cfg.MatchAudiences)
+
 	http.HandleFunc("/auth", authHandler)
 	http.HandleFunc("/healthz", healthzHandler)
 
