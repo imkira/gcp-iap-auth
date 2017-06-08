@@ -65,6 +65,26 @@ For help, just check usage:
 gcp-iap-auth --help
 ```
 
+## How to use it as a reverse proxy
+
+In this mode the `gcp-iap-auth` server runs as a proxy in front of another web
+app. The JWT header will be checked and requests with a valid header will be
+passed to the backend, while all other requests will return HTTP error 401.
+
+```shell
+gcp-iap-auth --audiences=https://APP_DOMAIN --backend=http://localhost:8080
+```
+
+In proxy mode you may optionally specify a header that will be filled with the
+validated email address from the JWT token. The value will _only_ contain the
+email address, eg: `name@dom.tld`, unlike the `x-goog-authenticated-user-email`
+header this does not contain a namespace prefix, making this approach suitable
+for backend apps which only want an email address.
+
+```shell
+gcp-iap-auth --audiences=https://APP_DOMAIN --backend=http://localhost:8080 --email-header=X-WEBAUTH-USER
+```
+
 ## Integration with NGINX
 
 You can also integrate `gcp-iap-auth` server with [NGINX](https://nginx.org)

@@ -16,7 +16,7 @@ func main() {
 	if len(revision) > 8 {
 		revision = revision[:8]
 	}
-	log.Printf("Cloud IAP Auth Server (build: %s.%s)\n", version, revision)
+	log.Printf("Cloud IAP Auth & Proxy Server (build: %s.%s)\n", version, revision)
 
 	if err := initConfig(); err != nil {
 		log.Fatal(err)
@@ -24,6 +24,15 @@ func main() {
 
 	http.HandleFunc("/auth", authHandler)
 	http.HandleFunc("/healthz", healthzHandler)
+
+	if backend != nil && *backend != "" {
+		proxy, err := newProxy(*backend, *emailHeader)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("Proxying authenticated requests to backend %s", *backend)
+		http.HandleFunc("/", proxy.handler)
+	}
 
 	addr := net.JoinHostPort(*listenAddr, *listenPort)
 	if len(*tlsCertPath) != 0 || len(*tlsKeyPath) != 0 {

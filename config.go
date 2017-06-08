@@ -21,6 +21,8 @@ var (
 	publicKeysPath = flag.String("public-keys", "", "Path to public keys file (optional)")
 	tlsCertPath    = flag.String("tls-cert", "", "Path to TLS server's, intermediate's and CA's PEM certificate (optional)")
 	tlsKeyPath     = flag.String("tls-key", "", "Path to TLS server's PEM key file (optional)")
+	backend        = flag.String("backend", "", "Proxy authenticated requests to the specified URL (optional)")
+	emailHeader    = flag.String("email-header", "X-WEBAUTH-USER", "In proxy mode, set the authenticated email address in the specified header")
 )
 
 func initConfig() error {
