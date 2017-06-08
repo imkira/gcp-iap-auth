@@ -3,7 +3,9 @@ package main
 import (
 	"errors"
 	"fmt"
+	"net/url"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -17,7 +19,7 @@ var (
 	cfg            = &jwt.Config{}
 	listenAddr     = flag.String("listen-addr", "0.0.0.0", "Listen address")
 	listenPort     = flag.String("listen-port", "", "Listen port (default: 80 for HTTP or 443 for HTTPS)")
-	audiences      = flag.String("audiences", "", "Comma separated list of JWT Audiences (format: https://yourdomain or https://yourdomain:port)")
+	audiences      = flag.String("audiences", "", "Comma-separated list of JWT Audiences (elements can be URLs like \"https://exammple.com:port\" or regular expressions like \"/^https://example\\.com:port$/\" if you enclose them in slashes)")
 	publicKeysPath = flag.String("public-keys", "", "Path to public keys file (optional)")
 	tlsCertPath    = flag.String("tls-cert", "", "Path to TLS server's, intermediate's and CA's PEM certificate (optional)")
 	tlsKeyPath     = flag.String("tls-key", "", "Path to TLS server's PEM key file (optional)")
@@ -35,7 +37,7 @@ func initConfig() error {
 	if len(*audiences) == 0 {
 		return errors.New("You must specify --audiences")
 	}
-	if err := initAudiences(strings.Split(*audiences, ",")); err != nil {
+	if err := initAudiences(*audiences); err != nil {
 		return err
 	}
 	if err := initPublicKeys(*publicKeysPath); err != nil {
@@ -58,15 +60,47 @@ func initServerPort() error {
 	return nil
 }
 
-func initAudiences(rawURLs []string) error {
-	for _, rawURL := range rawURLs {
-		aud, err := jwt.ParseAudience(rawURL)
-		if err != nil {
-			return fmt.Errorf("Invalid audience %q (%v)", rawURL, err)
-		}
-		cfg.Audiences = append(cfg.Audiences, aud)
+func initAudiences(audiences string) error {
+	str, err := extractAudiencesRegexp(audiences)
+	if err != nil {
+		return err
 	}
+	re, err := regexp.Compile(str)
+	if err != nil {
+		return fmt.Errorf("Invalid audiences regular expression %q (%v)", str, err)
+	}
+	cfg.MatchAudiences = re
 	return nil
+}
+
+func extractAudiencesRegexp(audiences string) (string, error) {
+	var strs []string
+	for _, audience := range strings.Split(audiences, ",") {
+		str, err := extractAudienceRegexp(audience)
+		if err != nil {
+			return "", err
+		}
+		strs = append(strs, str)
+	}
+	return strings.Join(strs, "|"), nil
+}
+
+func extractAudienceRegexp(audience string) (string, error) {
+	if strings.HasPrefix(audience, "/") && strings.HasSuffix(audience, "/") {
+		if len(audience) < 3 {
+			return "", fmt.Errorf("Invalid audiences regular expression %q", audience)
+		}
+		return audience[1 : len(audience)-1], nil
+	}
+	return parseRawAudience(audience)
+}
+
+func parseRawAudience(audience string) (string, error) {
+	aud, err := jwt.ParseAudience(audience)
+	if err != nil {
+		return "", fmt.Errorf("Invalid audience %q (%v)", audience, err)
+	}
+	return fmt.Sprintf("^%s$", regexp.QuoteMeta((*url.URL)(aud).String())), nil
 }
 
 func initPublicKeys(filePath string) error {
