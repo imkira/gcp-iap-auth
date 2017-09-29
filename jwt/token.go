@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	tokenHeader    = "X-Goog-Authenticated-User-JWT"
+	tokenHeader    = "X-Goog-IAP-JWT-Assertion"
 	algorithm      = "ES256"
 	algorithmClaim = "alg"
 	keyIDClaim     = "kid"
