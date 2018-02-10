@@ -2,7 +2,6 @@ package jwt
 
 import (
 	"errors"
-	"net/url"
 	"regexp"
 )
 
@@ -25,5 +24,5 @@ func (cfg *Config) Validate() error {
 }
 
 func (cfg *Config) matchesAudience(aud *Audience) bool {
-	return cfg.MatchAudiences.MatchString((*url.URL)(aud).String())
+	return cfg.MatchAudiences.MatchString((string)(*aud))
 }
