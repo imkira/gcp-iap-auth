@@ -155,7 +155,7 @@ requests to a backend server.
           value: "https://YOUR_DOMAIN1,https://YOUR_DOMAIN2"
         - name: GCP_IAP_AUTH_LISTEN_PORT
           value: "1080"
-        - name: GCP_IAP_BACKEND
+        - name: GCP_IAP_AUTH_BACKEND
           value: "http://YOUR_BACKEND_SERVER"
         ports:
         - name: proxy
