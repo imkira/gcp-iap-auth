@@ -47,13 +47,14 @@ For advanced usage, make sure to check the
 After downloading it, you can execute it like:
 
 ```shell
-gcp-iap-auth --audiences=https://APP_DOMAIN
+gcp-iap-auth --audiences=YOUR_AUDIENCE
 ```
+Construction of the `YOUR_AUDIENCE` string is covered [here](https://godoc.org/github.com/imkira/gcp-iap-auth/jwt#Audience)
 
 HTTPS is also supported. Just make sure you give it the cert/key files:
 
 ```shell
-gcp-iap-auth --audiences=https://APP_DOMAIN --tls-cert=PATH_TO_CERT_FILE --tls-key=PATH_TO_KEY_FILE
+gcp-iap-auth --audiences=YOUR_AUDIENCE --tls-cert=PATH_TO_CERT_FILE --tls-key=PATH_TO_KEY_FILE
 ```
 
 It is also possible to use environment variables instead of flags.
@@ -72,7 +73,7 @@ app. The JWT header will be checked and requests with a valid header will be
 passed to the backend, while all other requests will return HTTP error 401.
 
 ```shell
-gcp-iap-auth --audiences=https://APP_DOMAIN --backend=http://localhost:8080
+gcp-iap-auth --audiences=YOUR_AUDIENCE --backend=http://localhost:8080
 ```
 
 In proxy mode you may optionally specify a header that will be filled with the
@@ -82,7 +83,7 @@ header this does not contain a namespace prefix, making this approach suitable
 for backend apps which only want an email address.
 
 ```shell
-gcp-iap-auth --audiences=https://APP_DOMAIN --backend=http://localhost:8080 --email-header=X-WEBAUTH-USER
+gcp-iap-auth --audiences=YOUR_AUDIENCE --backend=http://localhost:8080 --email-header=X-WEBAUTH-USER
 ```
 
 ## Integration with NGINX
@@ -110,7 +111,7 @@ The important part is as follows ([full nginx.conf example file here](https://gi
           proxy_pass                 http://AUTH_SERVER_UPSTREAM/auth;
           proxy_pass_request_body    off;
           proxy_pass_request_headers off;
-          proxy_set_header           X-Goog-Authenticated-User-JWT $http_x_goog_authenticated_user_jwt;
+          proxy_set_header           X-Goog-IAP-JWT-Assertion $http_x_goog_iap_jwt_assertion;
       }
 
       location / {
@@ -125,7 +126,7 @@ Please note:
 - Replace `AUTH_SERVER_UPSTREAM`, `AUTH_SERVER_ADDR`, and `AUTH_SERVER_PORT` with the data about your `gcp-iap-auth` server.
 - Replace `APP_SERVER_UPSTREAM`, `APP_SERVER_ADDR`, and `APP_SERVER_PORT` with the data about your own web app server.
 - Replace `APP_DOMAIN` with the domain(s) you set up in your GCP IAP settings.
-- `gcp-iap-auth` only needs to receive the original `X-Goog-Authenticated-User-JWT` header sent by Google, so you can and you are advised to disable proxying the original request body and other headers. Not only it is unecessary you may leak information you may not want to.
+- `gcp-iap-auth` only needs to receive the original `X-Goog-IAP-JWT-Assertion` header sent by Google, so you can and you are advised to disable proxying the original request body and other headers. Not only it is unecessary you may leak information you may not want to.
 - Please adjust appropriately (you may want to use HTTPS instead of HTTP, multiple domains, etc.). This example is just provided for reference.
 
 ## Using it with Docker
@@ -133,7 +134,7 @@ Please note:
 [Docker images](https://hub.docker.com/r/imkira/gcp-iap-auth/) are provided for convenience.
 
 ```shell
-docker run --rm -e GCP_IAP_AUTH_AUDIENCES=https://yourdomain imkira/gcp-iap-auth
+docker run --rm -e GCP_IAP_AUTH_AUDIENCES=YOUR_AUDIENCE imkira/gcp-iap-auth
 ```
 
 For advanced usage, please read the instructions inside.
@@ -152,7 +153,7 @@ requests to a backend server.
         image: imkira/gcp-iap-auth:0.0.3
         env:
         - name: GCP_IAP_AUTH_AUDIENCES
-          value: "https://YOUR_DOMAIN1,https://YOUR_DOMAIN2"
+          value: "YOUR_AUDIENCE"
         - name: GCP_IAP_AUTH_LISTEN_PORT
           value: "1080"
         - name: GCP_IAP_AUTH_BACKEND
@@ -191,7 +192,7 @@ different ways, but I personally recommend running it as a
         image: imkira/gcp-iap-auth:0.0.3
         env:
         - name: GCP_IAP_AUTH_AUDIENCES
-          value: "https://YOUR_DOMAIN1,https://YOUR_DOMAIN2"
+          value: "YOUR_AUDIENCE"
         - name: GCP_IAP_AUTH_LISTEN_PORT
           value: "1080"
         ports:
