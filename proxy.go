@@ -8,6 +8,24 @@ import (
 	"net/url"
 
 	"github.com/imkira/gcp-iap-auth/jwt"
+
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
+)
+
+var (
+	authRequests = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "gcp_iap_proxy_queries_total",
+		Help: "The total number of queries",
+	})
+	authFailures = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "gcp_iap_proxy_auth_failures_total",
+		Help: "The total number of authentication requests that failed",
+	})
+	authSuccess = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "gcp_iap_proxy_auth_successful_total",
+		Help: "The total number of authentication requests that were successful",
+	})
 )
 
 type proxy struct {
@@ -29,6 +47,8 @@ func newProxy(backendURL, emailHeader string) (*proxy, error) {
 }
 
 func (p *proxy) handler(res http.ResponseWriter, req *http.Request) {
+	authRequests.Inc()
+
 	claims, err := jwt.RequestClaims(req, cfg)
 	if err != nil {
 		if claims == nil || len(claims.Email) == 0 {
@@ -36,10 +56,11 @@ func (p *proxy) handler(res http.ResponseWriter, req *http.Request) {
 		} else {
 			log.Printf("Failed to authenticate %q (%v)\n", claims.Email, err)
 		}
+		authFailures.Inc()
 		http.Error(res, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
-
+	authSuccess.Inc()
 	if p.emailHeader != "" {
 		req.Header.Set(p.emailHeader, claims.Email)
 	}
