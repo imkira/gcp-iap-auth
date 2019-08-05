@@ -3,9 +3,11 @@ package main
 import (
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"time"
 
 	"github.com/imkira/gcp-iap-auth/jwt"
 )
@@ -16,15 +18,28 @@ type proxy struct {
 	proxy       *httputil.ReverseProxy
 }
 
-func newProxy(backendURL, emailHeader string) (*proxy, error) {
+func newProxy(backendURL, emailHeader string, timeout time.Duration) (*proxy, error) {
 	backend, err := url.Parse(backendURL)
 	if err != nil {
 		return nil, fmt.Errorf("Could not parse URL '%s': %s", backendURL, err)
 	}
+	p := httputil.NewSingleHostReverseProxy(backend)
+	p.Transport = &http.Transport{
+		Proxy: http.ProxyFromEnvironment,
+		DialContext: (&net.Dialer{
+			Timeout:   timeout,
+			KeepAlive: 30 * time.Second,
+		}).DialContext,
+		MaxIdleConns:          100,
+		IdleConnTimeout:       90 * time.Second,
+		TLSHandshakeTimeout:   10 * time.Second,
+		ExpectContinueTimeout: 1 * time.Second,
+	}
+
 	return &proxy{
 		backend:     backend,
 		emailHeader: emailHeader,
-		proxy:       httputil.NewSingleHostReverseProxy(backend),
+		proxy:       p,
 	}, nil
 }
 

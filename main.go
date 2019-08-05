@@ -28,7 +28,7 @@ func main() {
 	http.HandleFunc("/healthz", healthzHandler)
 
 	if backend != nil && *backend != "" {
-		proxy, err := newProxy(*backend, *emailHeader)
+		proxy, err := newProxy(*backend, *emailHeader, timeout)
 		if err != nil {
 			log.Fatal(err)
 		}
