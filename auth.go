@@ -15,6 +15,8 @@ type userIdentity struct {
 }
 
 func authHandler(res http.ResponseWriter, req *http.Request) {
+	authRequests.Inc()
+
 	claims, err := jwt.RequestClaims(req, cfg)
 	if err != nil {
 		if claims == nil || len(claims.Email) == 0 {
@@ -22,6 +24,9 @@ func authHandler(res http.ResponseWriter, req *http.Request) {
 		} else {
 			log.Printf("Failed to authenticate %q (%v)\n", claims.Email, err)
 		}
+
+		authFailures.Inc()
+
 		res.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -33,4 +38,6 @@ func authHandler(res http.ResponseWriter, req *http.Request) {
 	log.Printf("Authenticated %q (token expires at %v)\n", user.Email, expiresAt)
 	res.WriteHeader(http.StatusOK)
 	json.NewEncoder(res).Encode(user)
+
+	authSuccess.Inc()
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"log"
 	"net"
 	"net/http"
@@ -26,6 +27,7 @@ func main() {
 
 	http.HandleFunc("/auth", authHandler)
 	http.HandleFunc("/healthz", healthzHandler)
+	http.Handle("/metrics", promhttp.Handler())
 
 	if backend != nil && *backend != "" {
 		proxy, err := newProxy(*backend, *emailHeader)
