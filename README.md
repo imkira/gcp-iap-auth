@@ -150,7 +150,7 @@ requests to a backend server.
 
 ```yaml
       - name: gcp-iap-auth
-        image: imkira/gcp-iap-auth:0.0.4
+        image: imkira/gcp-iap-auth:0.0.5
         env:
         - name: GCP_IAP_AUTH_AUDIENCES
           value: "YOUR_AUDIENCE"
@@ -189,7 +189,7 @@ different ways, but I personally recommend running it as a
       - name: nginx
       # your nginx container should go here...
       - name: gcp-iap-auth
-        image: imkira/gcp-iap-auth:0.0.4
+        image: imkira/gcp-iap-auth:0.0.5
         env:
         - name: GCP_IAP_AUTH_AUDIENCES
           value: "YOUR_AUDIENCE"

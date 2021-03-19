@@ -13,7 +13,7 @@ DIST_OUTPUT=gcp-iap-auth-$(GOOS)-$(GOARCH)
 
 SHASUM=shasum -a 1
 
-VERSION=0.0.3
+VERSION=0.0.5
 IMAGE=imkira/gcp-iap-auth
 
 .PHONY: all build build-docker docker-release dist clean deps vendor

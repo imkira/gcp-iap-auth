@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.0.4 (2021/03/19)
+## v0.0.5 (2021/03/19)
 
 - updated: use new token header from IAP: X-Goog-IAP-JWT-Assertion (#4)
 - docs: fix env var typo in README (#5)
