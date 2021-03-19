@@ -1,6 +1,6 @@
 language: go
 go:
-  - 1.8.1
+  - 1.16.2
 script:
   - GOOS=linux GOARCH=amd64 make dist
   - GOOS=darwin GOARCH=amd64 make dist
