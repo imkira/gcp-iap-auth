@@ -1,7 +1,0 @@
-package: github.com/imkira/gcp-iap-auth
-license: MIT
-import:
-- package: github.com/dgrijalva/jwt-go
-  version: ~3.x
-- package: github.com/namsral/flag
-  version: v1.7.4-alpha

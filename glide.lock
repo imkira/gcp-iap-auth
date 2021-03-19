@@ -1,8 +1,0 @@
-hash: 0b0beb39a82a22f74a34b6c0dcd1a7f367964d771556cfe867d46a215c9f591d
-updated: 2017-04-26T16:33:52.930875577+09:00
-imports:
-- name: github.com/dgrijalva/jwt-go
-  version: d2709f9f1f31ebcda9651b03077758c1f3a0018c
-- name: github.com/namsral/flag
-  version: 7fa59bdb55485001d702d9b6e15367cdf26bfde8
-testImports: []
