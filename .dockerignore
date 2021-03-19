@@ -1,3 +1,2 @@
-# build and dist files
-./build
-./dist
+*
+!dist/gcp-iap-auth-linux-amd64

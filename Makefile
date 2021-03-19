@@ -13,12 +13,26 @@ DIST_OUTPUT=gcp-iap-auth-$(GOOS)-$(GOARCH)
 
 SHASUM=shasum -a 1
 
-.PHONY: all build dist clean deps vendor
+VERSION=0.0.3
+IMAGE=imkira/gcp-iap-auth
+
+.PHONY: all build build-docker docker-release dist clean deps vendor
 
 all: build
 
 build:
 	go build -o "build/gcp-iap-auth"
+
+docker-build:
+	docker build -t "${IMAGE}" .
+
+docker-login:
+	echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+
+docker-release:
+	docker tag "${IMAGE}:${VERSION}" "${IMAGE}:latest"
+	docker push "${IMAGE}:${VERSION}"
+	docker push "${IMAGE}:latest"
 
 dist:
 	GOOS=$(GOOS) GOARCH=$(GOARCH) $(GOBUILD_ENV) go build $(GOBUILD_FLAGS) -o "dist/$(DIST_OUTPUT)"

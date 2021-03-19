@@ -3,17 +3,7 @@ LABEL maintainer "Mario Freitas <imkira@gmail.com>"
 
 WORKDIR /usr/local/bin
 
-ENV RELEASE_VER  v0.0.3
-ENV RELEASE_SHA1 69873d40040b5f65698d9cf59d713d0f141ca1ea
-
-RUN apk add --no-cache --update \
-      ca-certificates \
-      curl \
-    && curl -Lsj -o gcp-iap-auth https://github.com/imkira/gcp-iap-auth/releases/download/${RELEASE_VER}/gcp-iap-auth-linux-amd64 \
-    && (echo "${RELEASE_SHA1} *gcp-iap-auth" | sha1sum -c -) \
-    && chmod +x gcp-iap-auth \
-    && apk del curl \
-    && rm -rf /var/cache/apk/*
+COPY dist/gcp-iap-auth-linux-amd64 /usr/local/bin/gcp-iap-auth
 
 #ENV GCP_IAP_AUTH_LISTEN_ADDR=0.0.0.0
 #ENV GCP_IAP_AUTH_LISTEN_PORT=80

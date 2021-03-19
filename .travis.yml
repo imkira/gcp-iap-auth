@@ -1,19 +1,32 @@
+---
+services:
+  - docker
 language: go
 go:
   - 1.16.2
+env:
+  global:
+    - secure: 3Ty8rsDZGvLT+aTSRlPIWYfdtuORDaQn8pc5SmNEwdFzLdUX6Cc+rr2mss3v25VS79MYqvfyuPmFHY40qJrSPd7TcD39vjNa6e/xwW3mNyvn9bNzA4DRuVQfYGrZk7mKz6+I480S/md9PKdD5dcJc8Fdy2WLWxCUODovempNfoBqZW4zKdpmKSQPp7fOn+ZjEaonGUVLShgv14aJKmpNi3A+bjgMe+/A6507xc6gFjEM6ctdoyNRd82Sp/P+z2Hg8wxo3BX45oVPEwOEZyxUUBykxkO1hLRxyQL0oo8ydkGCLM5MYE2Pq8xB6jdnq5X0aZl9b+SNagqDTIaOi1DXq0jxyRlx20UcwYl0ntDdc/8XMuNmIsen/JYeGolTuP31SAw9vlBpC58Rf6XPjhydhJz/3kjwRB3txuqI3D9cl2Qin+5f4bpvUa9s10WxwV5E+OaJCl356T6yItNEsUgwrcO60v/OTcf/q5sGcCaydsFgEWIlVdqFYVS7IMkEn6KkyMKZlTwsO5gdRKrtduMu1mdMmqa1mK6kryZ7q6ZB5ZsjCcPmM8afcSQUiTR0QdiBi/RpCJ0RKQ6fwDoGulSSn1UCsvGHipki81iXii+xq9VMIKFQ6yEr1oY5Esa27cuTv+asOOL9L/ZeBjpZaxXGnknOa5qS6+Gk3Ei96yLBsVc=
+    - secure: q4cht4/gmKy29a82YNYc6xGyO6BaiISiVH3/T1smkN4wuqBg4aaufgpcUWSX5tHz3Uiqi3bKgfsMydueM06IYbF0hKiTpf71/BwzaoV+baLBRrrpzWAIzQb59E1jEkAtszV2Av4xt4sq7VjoN4SiQka/j42KZK+b3lsOMeDvXy7HIYKMHYo4sT0t3+OOMICK1Dmaox8KZIABQqAP6rh1CY0fyB/wMEYHozGHlBtpyINSq+VTiQspf7kUHbC2CBg+7/XIBLOsrRXPgzVBWYndagX6XSFW+13UY25/LZnZ3BS3rt9nSE0Qv//XkU8Ei+tLcL6YDPcNN1jiknuB5b6tBttJ22klTpHLkpyplhGnpSj9okLoedK0E5Ma59ikVQRePOPRM/Ge6LRzEkgK8O/4EdbH8fFaVyw9qiL6D6p/aZQb3gUWtZFTPufliYxCzGs8RL2uN3C7fOtgg79JZS74jskMsIDiHO/o+mLca9TsIBZs5DPrstrCY+cLe7QHdwNCSmIyD8H6S86mac0RFDeGSUYMgq+7lw4Z2sUpWe0pqAmwz0jK2c6iTNzokfxq7ewS6QBI5n48xQzgP67EIICYDP15/epb5JupnNDbQ/zCtDWSdYvbYjUe03eipADfgrkYDNht63Q5KuMJR+MEs0itYl/3OnTB9+sOnphANyGjwZg=
 script:
   - GOOS=linux GOARCH=amd64 make dist
   - GOOS=darwin GOARCH=amd64 make dist
   - GOOS=freebsd GOARCH=amd64 make dist
   - GOOS=windows GOARCH=amd64 make dist
+  - make docker-build
 deploy:
-  provider: releases
-  api_key:
-    secure: XDSSl46kbimgWtpfLtfFsug5fHLm+5wNR6PRG+PXFhA3b+QXzdqZUW/Fp1YnNeDpUkl1Z3neHYivwfTTBN/IBDo7FHX+Egkvl0HsIBr8hMIksR/h097SyRXi8+Ui/Mq59UtC0eR9KzqAYRHoxwoXP+JCQy5jWXp/DhHF0hHi1Tb+l4Q1qGvV0bhqVOcjGcVjkOTzco+c0+7YEjnZZpNO9UmEoUBdbLrb6R5yzvOzEfObLaaKGct2PrlKBVWTqYJmGX+jbkP7r2WRDQ6gBR6TmEFnisJ6YWEcyxBjWf1CfODeL2jVwIxeCtkCg3ZkCQ5jihyFpwabFKutQ3ks/2hEQ7waWQTKCC009WxF9DsmzC6/5muxjLa7ZeIIS6qMbjY26Ls4/r3ObDMKAoPEFrSQEqBUhZeQR/jgd0xExTU67dLGDcwRPi1x1f5ou3tXdvbkwZ5jMfhuWSej26jyokM60zsF/uWhvmBT6LPXWO6OVf7ZY+KX9sh8Qs9rycdYT+1+gVJc1+YxHOSVcwgwDsjUfqo1GZfN9RhiBnKurBfmXtWaSvRmN1okha5e2GA7OBjBOxxc6n2qbXVSY1j8oXhbYwhs4nx29OS+31u4mPXr0dBXo57l+8pP+AwFF32deJqBt6J20Zz1R06tUl5EAWeUaafFjHrubZthopoCQ2wRFEw=
-  file_glob: true
-  file:
-    - dist/*
-  skip_cleanup: true
-  on:
-    repo: imkira/gcp-iap-auth
-    tags: true
+  - provider: script
+    script: make docker-login docker-release
+    on:
+      repo: imkira/gcp-iap-auth
+      tags: true
+  - provider: releases
+    api_key:
+      secure: XDSSl46kbimgWtpfLtfFsug5fHLm+5wNR6PRG+PXFhA3b+QXzdqZUW/Fp1YnNeDpUkl1Z3neHYivwfTTBN/IBDo7FHX+Egkvl0HsIBr8hMIksR/h097SyRXi8+Ui/Mq59UtC0eR9KzqAYRHoxwoXP+JCQy5jWXp/DhHF0hHi1Tb+l4Q1qGvV0bhqVOcjGcVjkOTzco+c0+7YEjnZZpNO9UmEoUBdbLrb6R5yzvOzEfObLaaKGct2PrlKBVWTqYJmGX+jbkP7r2WRDQ6gBR6TmEFnisJ6YWEcyxBjWf1CfODeL2jVwIxeCtkCg3ZkCQ5jihyFpwabFKutQ3ks/2hEQ7waWQTKCC009WxF9DsmzC6/5muxjLa7ZeIIS6qMbjY26Ls4/r3ObDMKAoPEFrSQEqBUhZeQR/jgd0xExTU67dLGDcwRPi1x1f5ou3tXdvbkwZ5jMfhuWSej26jyokM60zsF/uWhvmBT6LPXWO6OVf7ZY+KX9sh8Qs9rycdYT+1+gVJc1+YxHOSVcwgwDsjUfqo1GZfN9RhiBnKurBfmXtWaSvRmN1okha5e2GA7OBjBOxxc6n2qbXVSY1j8oXhbYwhs4nx29OS+31u4mPXr0dBXo57l+8pP+AwFF32deJqBt6J20Zz1R06tUl5EAWeUaafFjHrubZthopoCQ2wRFEw=
+    file_glob: true
+    file:
+      - dist/*
+    skip_cleanup: true
+    on:
+      repo: imkira/gcp-iap-auth
+      tags: true
