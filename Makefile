@@ -24,13 +24,12 @@ build:
 	go build -o "build/gcp-iap-auth"
 
 docker-build:
-	docker build -t "${IMAGE}" .
+	docker build -t "${IMAGE}:${VERSION}" .
 
 docker-login:
 	echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
 
 docker-release:
-	docker tag "${IMAGE}:${VERSION}" "${IMAGE}:latest"
 	docker push "${IMAGE}:${VERSION}"
 	docker push "${IMAGE}:latest"
 
