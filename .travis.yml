@@ -13,10 +13,11 @@ script:
   - GOOS=darwin GOARCH=amd64 make dist
   - GOOS=freebsd GOARCH=amd64 make dist
   - GOOS=windows GOARCH=amd64 make dist
+  - make docker-login
   - make docker-build
 deploy:
   - provider: script
-    script: make docker-login docker-release
+    script: make docker-release
     on:
       repo: imkira/gcp-iap-auth
       tags: true
