@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.0.4 (2021/03/19)
+
+- updated: use new token header from IAP: X-Goog-IAP-JWT-Assertion (#4)
+- docs: fix env var typo in README (#5)
+- docs: updates after breaking GCP IAP changes (#8)
+- updated: migrate glide to go mod (#15)
+- updated: go version (#15)
+- updated: jwt-go to v3.2.0 (#16)
+- added: docker release on tags (#17)
+- updated: alpine 3.13.2 (#18)
+
 ## v0.0.3 (2017/06/08)
 
 - added: support for audiences as regexp (#3)
