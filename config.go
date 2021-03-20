@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/imkira/gcp-iap-auth/jwt"
 	"github.com/namsral/flag"
@@ -24,6 +25,8 @@ var (
 	tlsKeyPath     = flag.String("tls-key", "", "Path to TLS server's PEM key file (optional)")
 	backend        = flag.String("backend", "", "Proxy authenticated requests to the specified URL (optional)")
 	emailHeader    = flag.String("email-header", "X-WEBAUTH-USER", "In proxy mode, set the authenticated email address in the specified header")
+	duration       = flag.String("timeout", "30s", "proxy request timeout, e.g. 15s or 1m")
+	timeout        time.Duration
 )
 
 func initConfig() error {
@@ -40,6 +43,9 @@ func initConfig() error {
 		return err
 	}
 	if err := initPublicKeys(*publicKeysPath); err != nil {
+		return err
+	}
+	if err := initTimeout(*duration); err != nil {
 		return err
 	}
 	return nil
@@ -113,6 +119,15 @@ func initPublicKeys(filePath string) error {
 		return err
 	}
 	return cfg.Validate()
+}
+
+func initTimeout(duration string) error {
+	var err error
+	timeout, err = time.ParseDuration(duration)
+	if err != nil {
+		return fmt.Errorf("failed to parse timeout (%s): %v", duration, err)
+	}
+	return nil
 }
 
 func loadPublicKeysFromFile(filePath string) (map[string]jwt.PublicKey, error) {
