@@ -4,6 +4,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"strings"
 )
 
 var (
@@ -23,6 +24,10 @@ func main() {
 	}
 
 	log.Printf("Matching audiences: %s\n", cfg.MatchAudiences)
+
+	if len(cfg.MatchDomains) > 0 {
+		log.Printf("Matching domains: %s\n", strings.Join(parsedDomains, ", "))
+	}
 
 	http.HandleFunc("/auth", authHandler)
 	http.HandleFunc("/healthz", healthzHandler)
