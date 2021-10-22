@@ -19,6 +19,8 @@ var (
 	listenAddr     = flag.String("listen-addr", "0.0.0.0", "Listen address")
 	listenPort     = flag.String("listen-port", "", "Listen port (default: 80 for HTTP or 443 for HTTPS)")
 	audiences      = flag.String("audiences", "", "Comma-separated list of JWT Audiences (elements can be paths like \"/projects/PROJECT_NUMBER/apps/PROJECT_ID\" or regular expressions like \"/^\\/projects\\/PROJECT_NUMBER/.*\" if you enclose them in slashes)")
+	domains        = flag.String("domains", "", "Comma-separated list of allowed JWT Hosted Domains (hd) (optional)")
+	parsedDomains  = []string{}
 	publicKeysPath = flag.String("public-keys", "", "Path to public keys file (optional)")
 	tlsCertPath    = flag.String("tls-cert", "", "Path to TLS server's, intermediate's and CA's PEM certificate (optional)")
 	tlsKeyPath     = flag.String("tls-key", "", "Path to TLS server's PEM key file (optional)")
@@ -39,6 +41,7 @@ func initConfig() error {
 	if err := initAudiences(*audiences); err != nil {
 		return err
 	}
+	initDomains(*domains)
 	if err := initPublicKeys(*publicKeysPath); err != nil {
 		return err
 	}
@@ -100,6 +103,18 @@ func parseRawAudience(audience string) (string, error) {
 		return "", fmt.Errorf("Invalid audience %q (%v)", audience, err)
 	}
 	return fmt.Sprintf("^%s$", regexp.QuoteMeta((string)(*aud))), nil
+}
+
+func initDomains(domains string) {
+	cfg.MatchDomains = map[string]bool{}
+	if len(domains) > 0 {
+		for _, domain := range strings.Split(domains, ",") {
+			if len(domain) > 0 {
+				cfg.MatchDomains[domain] = true
+				parsedDomains = append(parsedDomains, domain)
+			}
+		}
+	}
 }
 
 func initPublicKeys(filePath string) error {

@@ -9,9 +9,9 @@ import (
 // Claims represents parsed JWT Token Claims.
 type Claims struct {
 	jwt.StandardClaims
-	Email string `json:"email,omitempty"`
-
-	cfg *Config
+	Domain string `json:"hd,omitempty"`
+	Email  string `json:"email,omitempty"`
+	cfg    *Config
 }
 
 // Valid validates the Claims.
@@ -28,6 +28,9 @@ func (c Claims) Valid() error {
 	}
 	if !c.cfg.matchesAudience(aud) {
 		return fmt.Errorf("Unexpected audience: %q", c.Audience)
+	}
+	if !c.cfg.matchesDomain(c.Domain) {
+		return fmt.Errorf("Unexpected domain: %q", c.Domain)
 	}
 	return nil
 }

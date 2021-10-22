@@ -10,6 +10,7 @@ import (
 type Config struct {
 	PublicKeys     map[string]PublicKey
 	MatchAudiences *regexp.Regexp
+	MatchDomains   map[string]bool
 }
 
 // Validate validates the Configuration.
@@ -25,4 +26,8 @@ func (cfg *Config) Validate() error {
 
 func (cfg *Config) matchesAudience(aud *Audience) bool {
 	return cfg.MatchAudiences.MatchString((string)(*aud))
+}
+
+func (cfg *Config) matchesDomain(hd string) bool {
+	return len(cfg.MatchDomains) == 0 || cfg.MatchDomains[hd]
 }
