@@ -40,9 +40,3 @@ dist:
 
 clean:
 	rm -rf build dist
-
-deps:
-	[ ! -d "${GOPATH}/src/github.com/Masterminds/glide" ] && go get -u github.com/Masterminds/glide
-
-vendor:
-	glide up -v
