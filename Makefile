@@ -16,7 +16,7 @@ SHASUM=shasum -a 1
 VERSION=0.0.5
 IMAGE=imkira/gcp-iap-auth
 
-.PHONY: all build build-docker docker-release dist clean deps vendor
+.PHONY: all build build-docker docker-release dist clean
 
 all: build
 
@@ -40,9 +40,3 @@ dist:
 
 clean:
 	rm -rf build dist
-
-deps:
-	[ ! -d "${GOPATH}/src/github.com/Masterminds/glide" ] && go get -u github.com/Masterminds/glide
-
-vendor:
-	glide up -v
