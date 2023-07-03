@@ -42,7 +42,8 @@ func initConfig() error {
 		return err
 	}
 	initDomains(*domains)
-	if err := initPublicKeys(*publicKeysPath); err != nil {
+	cfg.PublicKeyPath = *publicKeysPath
+	if err := cfg.RefreshPublicKeys(); err != nil {
 		return err
 	}
 	return nil
@@ -115,26 +116,4 @@ func initDomains(domains string) {
 			}
 		}
 	}
-}
-
-func initPublicKeys(filePath string) error {
-	var err error
-	if len(filePath) != 0 {
-		cfg.PublicKeys, err = loadPublicKeysFromFile(filePath)
-	} else {
-		cfg.PublicKeys, err = jwt.FetchPublicKeys()
-	}
-	if err != nil {
-		return err
-	}
-	return cfg.Validate()
-}
-
-func loadPublicKeysFromFile(filePath string) (map[string]jwt.PublicKey, error) {
-	f, err := os.Open(filePath)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-	return jwt.DecodePublicKeys(f)
 }
