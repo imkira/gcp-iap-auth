@@ -1,4 +1,4 @@
-FROM alpine:3.13.2
+FROM alpine:3.22.2
 LABEL maintainer "Mario Freitas <imkira@gmail.com>"
 
 WORKDIR /usr/local/bin
